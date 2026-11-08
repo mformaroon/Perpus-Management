@@ -1,0 +1,228 @@
+{% extends 'base.html' %}
+
+{% block title %}Kelola Anggota & Petugas{% endblock %}
+{% block header_title %}Manajemen Pengguna Perpustakaan{% endblock %}
+
+{% block content %}
+<!-- Add User Panels (2 columns: Add Anggota & Add Petugas) -->
+<div class="grid-2">
+    <!-- Panel 1: Add Anggota -->
+    <div class="glass-card">
+        <div class="section-header">
+            <div class="section-title">
+                <i class="fa-solid fa-user-plus"></i>
+                Tambah Anggota Baru
+            </div>
+        </div>
+        
+        <form action="{{ url_for('add_member') }}" method="POST">
+            <div style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.5rem;">
+                <div class="form-group">
+                    <label class="form-label">ID Anggota</label>
+                    <input type="text" name="id_pengguna" placeholder="Contoh: A003" required class="input-custom">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Nama Lengkap</label>
+                    <input type="text" name="nama" placeholder="Contoh: Rian Hidayat" required class="input-custom">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Alamat Email</label>
+                    <input type="email" name="email" placeholder="Contoh: rian@email.com" required class="input-custom">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tipe Keanggotaan</label>
+                    <select name="tipe_keanggotaan" class="select-custom" style="width: 100%;">
+                        <option value="Regular">Regular (Limit: 3 Buku)</option>
+                        <option value="Premium">Premium (Limit: 7 Buku)</option>
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%;"><i class="fa-solid fa-save"></i> Daftarkan Anggota</button>
+        </form>
+    </div>
+
+    <!-- Panel 2: Add Petugas -->
+    <div class="glass-card">
+        <div class="section-header">
+            <div class="section-title">
+                <i class="fa-solid fa-user-tie"></i>
+                Tambah Petugas Baru
+            </div>
+        </div>
+        
+        <form action="{{ url_for('add_officer') }}" method="POST">
+            <div style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.5rem;">
+                <div class="form-group">
+                    <label class="form-label">ID Petugas</label>
+                    <input type="text" name="id_pengguna" placeholder="Contoh: staff01" required class="input-custom">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Nama Lengkap</label>
+                    <input type="text" name="nama" placeholder="Contoh: Dian Lestari" required class="input-custom">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Alamat Email</label>
+                    <input type="email" name="email" placeholder="Contoh: dian@librasys.com" required class="input-custom">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">NIP (Nomor Induk Pegawai)</label>
+                    <input type="text" name="nip" placeholder="Contoh: 19851024" required class="input-custom">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-secondary" style="width: 100%; border-color: var(--secondary); color: var(--secondary);"><i class="fa-solid fa-save"></i> Daftarkan Petugas</button>
+        </form>
+    </div>
+</div>
+
+<!-- Users List -->
+<div class="glass-card">
+    <div class="section-header">
+        <div class="section-title">
+            <i class="fa-solid fa-list-ul"></i>
+            Daftar Pengguna Sistem ({{ users|length }} Pengguna)
+        </div>
+    </div>
+    
+    <div class="table-responsive">
+        <table class="table-custom">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nama</th>
+                    <th>Email</th>
+                    <th>Peran</th>
+                    <th>NIP / Tipe Anggota</th>
+                    <th>Limit Pinjam</th>
+                    <th style="text-align: right;">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in users %}
+                <tr>
+                    <td><strong>{{ u.id_pengguna }}</strong></td>
+                    <td>{{ u.nama }}</td>
+                    <td>{{ u.email }}</td>
+                    <td>
+                        {% if u.role_name() == 'Petugas' %}
+                            <span class="badge badge-danger">Petugas</span>
+                        {% else %}
+                            <span class="badge badge-info">Anggota</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if u.role_name() == 'Petugas' %}
+                            NIP: {{ u.nip }}
+                        {% else %}
+                            {{ u.tipe_keanggotaan }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if u.role_name() == 'Petugas' %}
+                            -
+                        {% else %}
+                            {{ u.maks_pinjam }} Buku
+                        {% endif %}
+                    </td>
+                    <td style="text-align: right;">
+                        <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+                            <button onclick="openEditUserModal('{{ u.id_pengguna }}', '{{ u.nama }}', '{{ u.email }}', '{{ u.role_name() }}', '{{ u.tipe_keanggotaan if u.role_name() == 'Anggota' else '' }}', '{{ u.nip if u.role_name() == 'Petugas' else '' }}')" class="btn btn-secondary" style="padding: 0.4rem 0.6rem; font-size: 0.8rem;">
+                                <i class="fa-solid fa-edit"></i>
+                            </button>
+                            <!-- Prevent self-deletion of currently active demo user -->
+                            {% if session.get('user_id') != u.id_pengguna %}
+                            <form action="{{ url_for('delete_user', user_id=u.id_pengguna) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pengguna ini?')">
+                                <button type="submit" class="btn btn-danger" style="padding: 0.4rem 0.6rem; font-size: 0.8rem;">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Edit User Modal -->
+<div class="modal-overlay" id="edit-user-modal" style="display: none;">
+    <div class="glass-card modal-content">
+        <div class="section-header">
+            <div class="section-title">
+                <i class="fa-solid fa-user-gear"></i>
+                Edit Pengguna
+            </div>
+            <button onclick="closeEditUserModal()" class="alert-close"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        
+        <form id="edit-user-form" action="" method="POST">
+            <div style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.5rem;">
+                <div class="form-group">
+                    <label class="form-label">ID Pengguna (Tidak dapat diubah)</label>
+                    <input type="text" id="edit-user-id-display" disabled class="input-custom" style="opacity: 0.6;">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Nama Lengkap</label>
+                    <input type="text" name="nama" id="edit-user-nama" required class="input-custom">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" name="email" id="edit-user-email" required class="input-custom">
+                </div>
+                
+                <!-- Conditionally shown based on role -->
+                <div class="form-group" id="edit-group-tipe">
+                    <label class="form-label">Tipe Keanggotaan</label>
+                    <select name="tipe_keanggotaan" id="edit-user-tipe" class="select-custom" style="width: 100%;">
+                        <option value="Regular">Regular (Limit: 3 Buku)</option>
+                        <option value="Premium">Premium (Limit: 7 Buku)</option>
+                    </select>
+                </div>
+                <div class="form-group" id="edit-group-nip">
+                    <label class="form-label">NIP</label>
+                    <input type="text" name="nip" id="edit-user-nip" class="input-custom">
+                </div>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 1rem;">
+                <button type="button" onclick="closeEditUserModal()" class="btn btn-secondary">Batal</button>
+                <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function openEditUserModal(id, nama, email, role, tipe, nip) {
+        document.getElementById('edit-user-id-display').value = id;
+        document.getElementById('edit-user-nama').value = nama;
+        document.getElementById('edit-user-email').value = email;
+        
+        const tipeGroup = document.getElementById('edit-group-tipe');
+        const nipGroup = document.getElementById('edit-group-nip');
+        
+        if (role === 'Anggota') {
+            tipeGroup.style.display = 'flex';
+            nipGroup.style.display = 'none';
+            document.getElementById('edit-user-tipe').value = tipe;
+            document.getElementById('edit-user-nip').required = false;
+        } else {
+            tipeGroup.style.display = 'none';
+            nipGroup.style.display = 'flex';
+            document.getElementById('edit-user-nip').value = nip;
+            document.getElementById('edit-user-nip').required = true;
+        }
+        
+        // set form action url
+        document.getElementById('edit-user-form').action = "/members/edit/" + id;
+        
+        document.getElementById('edit-user-modal').style.display = 'flex';
+    }
+    
+    function closeEditUserModal() {
+        document.getElementById('edit-user-modal').style.display = 'none';
+    }
+</script>
+{% endblock %}

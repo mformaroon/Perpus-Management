@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LibraSys - {% block title %}Sistem Manajemen Perpustakaan{% endblock %}</title>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    {% block styles %}{% endblock %}
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo-container">
+                <i class="fa-solid fa-graduation-cap logo-icon"></i>
+                <span class="logo-text">LibraSys</span>
+            </div>
+            
+            <nav style="flex: 1;">
+                <ul class="nav-menu">
+                    <li>
+                        <a href="{{ url_for('dashboard') }}" class="nav-link {% if active_page == 'dashboard' %}active{% endif %}">
+                            <i class="fa-solid fa-chart-pie"></i>
+                            <span class="nav-text">Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('books') }}" class="nav-link {% if active_page == 'books' %}active{% endif %}">
+                            <i class="fa-solid fa-book-open"></i>
+                            <span class="nav-text">Koleksi Buku</span>
+                        </a>
+                    </li>
+                    {% if session.get('user_role') == 'Petugas' %}
+                    <li>
+                        <a href="{{ url_for('members') }}" class="nav-link {% if active_page == 'members' %}active{% endif %}">
+                            <i class="fa-solid fa-users"></i>
+                            <span class="nav-text">Anggota</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                    <li>
+                        <a href="{{ url_for('transactions') }}" class="nav-link {% if active_page == 'transactions' %}active{% endif %}">
+                            <i class="fa-solid fa-handshake"></i>
+                            <span class="nav-text">Sirkulasi</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('reservations') }}" class="nav-link {% if active_page == 'reservations' %}active{% endif %}">
+                            <i class="fa-solid fa-calendar-bookmark"></i>
+                            <span class="nav-text">Reservasi</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div style="border-top: 1px solid var(--glass-border); padding-top: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.8rem; color: var(--text-muted); margin-top: auto;">
+                <div><i class="fa-solid fa-user-shield" style="margin-right: 0.5rem;"></i>Login sebagai:</div>
+                <div style="color: var(--text-primary); font-weight: 600; font-size: 0.9rem; margin-bottom: 0.5rem;">
+                    {{ session.get('user_name', 'Tamu') }} 
+                    <span style="font-size: 0.7rem; font-weight: 500;" class="badge {% if session.get('user_role') == 'Petugas' %}badge-danger{% else %}badge-info{% endif %}">
+                        {{ session.get('user_role', 'Anggota') }}
+                    </span>
+                </div>
+                {% if session.get('user_role') == 'Anggota' %}
+                <div style="font-size: 0.75rem; margin-bottom: 0.5rem;">Limit Pinjam: {{ session.get('user_maks_pinjam', 3) }} buku</div>
+                {% endif %}
+                <form action="{{ url_for('logout') }}" method="POST" style="width: 100%;">
+                    <button type="submit" class="btn btn-danger" style="width: 100%; justify-content: center; padding: 0.5rem; font-size: 0.8rem;">
+                        <i class="fa-solid fa-right-from-bracket"></i> Keluar
+                    </button>
+                </form>
+            </div>
+        </aside>
+
+        <!-- Main Content Wrapper -->
+        <main class="main-content">
+            <!-- Topbar (Header + Date) -->
+            <header class="topbar">
+                <div class="topbar-title">
+                    <h1>{% block header_title %}Dashboard{% endblock %}</h1>
+                </div>
+                <div style="font-size: 0.875rem; color: var(--text-secondary); font-weight: 500;">
+                    <i class="fa-regular fa-calendar-check" style="margin-right: 0.25rem; color: var(--primary);"></i>
+                    <span id="topbar-date"></span>
+                </div>
+            </header>
+
+            <!-- Alerts Banner -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert-banner {% if category == 'success' %}success{% else %}error{% endif %}" id="alert-{{ loop.index }}">
+                            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                {% if category == 'success' %}
+                                    <i class="fa-solid fa-circle-check"></i>
+                                {% else %}
+                                    <i class="fa-solid fa-circle-exclamation"></i>
+                                {% endif %}
+                                <span>{{ message }}</span>
+                            </div>
+                            <button class="alert-close" onclick="document.getElementById('alert-{{ loop.index }}').style.display='none'">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <!-- Core Content Page -->
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    <!-- JavaScript block -->
+    <script>
+        // Set formatted Indonesian date in topbar
+        document.addEventListener("DOMContentLoaded", function() {
+            const dateEl = document.getElementById("topbar-date");
+            if (dateEl) {
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                const today = new Date();
+                dateEl.textContent = today.toLocaleDateString('id-ID', options);
+            }
+        });
+
+        // Automatic dismiss alerts after 5 seconds
+        setTimeout(function() {
+            const alerts = document.querySelectorAll('.alert-banner');
+            alerts.forEach(function(alert) {
+                alert.style.transition = 'opacity 0.5s ease';
+                alert.style.opacity = '0';
+                setTimeout(function() {
+                    alert.style.display = 'none';
+                }, 500);
+            });
+        }, 5000);
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

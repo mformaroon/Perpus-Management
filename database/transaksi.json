@@ -1,0 +1,110 @@
+[
+    {
+        "id_transaksi": "TX-0001",
+        "id_anggota": "A001",
+        "isbn": "9786020331",
+        "tanggal": "2026-06-22",
+        "tipe_transaksi": "Peminjaman",
+        "tanggal_jatuh_tempo": "2026-06-29",
+        "status": "DIKEMBALIKAN"
+    },
+    {
+        "id_transaksi": "TX-0002",
+        "id_anggota": "A002",
+        "isbn": "9786020633",
+        "tanggal": "2026-06-14",
+        "tipe_transaksi": "Peminjaman",
+        "tanggal_jatuh_tempo": "2026-06-21",
+        "status": "DIKEMBALIKAN"
+    },
+    {
+        "id_transaksi": "RT-0001",
+        "id_anggota": "A002",
+        "isbn": "9786020633",
+        "tanggal": "2026-06-24",
+        "tipe_transaksi": "Pengembalian",
+        "id_peminjaman": "TX-0002",
+        "denda": 6000
+    },
+    {
+        "id_transaksi": "TX-0003",
+        "id_anggota": "A001",
+        "isbn": "9786022914",
+        "tanggal": "2026-06-30",
+        "tipe_transaksi": "Peminjaman",
+        "tanggal_jatuh_tempo": "2026-07-07",
+        "status": "DIPINJAM"
+    },
+    {
+        "id_transaksi": "TX-0004",
+        "id_anggota": "12345",
+        "isbn": "9786020822",
+        "tanggal": "2026-07-01",
+        "tipe_transaksi": "Peminjaman",
+        "tanggal_jatuh_tempo": "2026-07-08",
+        "status": "DIPINJAM"
+    },
+    {
+        "id_transaksi": "RT-0002",
+        "id_anggota": "A001",
+        "isbn": "9786020331",
+        "tanggal": "2026-07-01",
+        "tipe_transaksi": "Pengembalian",
+        "id_peminjaman": "TX-0001",
+        "denda": 4000
+    },
+    {
+        "id_transaksi": "TX-0005",
+        "id_anggota": "12345",
+        "isbn": "9789792248",
+        "tanggal": "2026-07-01",
+        "tipe_transaksi": "Peminjaman",
+        "tanggal_jatuh_tempo": "2026-07-08",
+        "status": "DIKEMBALIKAN"
+    },
+    {
+        "id_transaksi": "TX-0006",
+        "id_anggota": "12345",
+        "isbn": "9786020331",
+        "tanggal": "2026-07-01",
+        "tipe_transaksi": "Peminjaman",
+        "tanggal_jatuh_tempo": "2026-07-08",
+        "status": "DIPINJAM"
+    },
+    {
+        "id_transaksi": "RT-0003",
+        "id_anggota": "12345",
+        "isbn": "9789792248",
+        "tanggal": "2026-07-01",
+        "tipe_transaksi": "Pengembalian",
+        "id_peminjaman": "TX-0005",
+        "denda": 0
+    },
+    {
+        "id_transaksi": "TX-0007",
+        "id_anggota": "A002",
+        "isbn": "9789792248",
+        "tanggal": "2026-07-01",
+        "tipe_transaksi": "Peminjaman",
+        "tanggal_jatuh_tempo": "2026-07-08",
+        "status": "DIKEMBALIKAN"
+    },
+    {
+        "id_transaksi": "RT-0004",
+        "id_anggota": "A002",
+        "isbn": "9789792248",
+        "tanggal": "2026-07-01",
+        "tipe_transaksi": "Pengembalian",
+        "id_peminjaman": "TX-0007",
+        "denda": 0
+    },
+    {
+        "id_transaksi": "TX-0008",
+        "id_anggota": "A001",
+        "isbn": "9789792248",
+        "tanggal": "2026-07-01",
+        "tipe_transaksi": "Peminjaman",
+        "tanggal_jatuh_tempo": "2026-07-08",
+        "status": "DIPINJAM"
+    }
+]

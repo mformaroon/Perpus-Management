@@ -1,0 +1,171 @@
+{% extends 'base.html' %}
+
+{% block title %}Sirkulasi Buku{% endblock %}
+{% block header_title %}Manajemen Sirkulasi & Transaksi{% endblock %}
+
+{% block content %}
+
+<!-- Petugas Menu: Record Peminjaman Form -->
+{% if session.get('user_role') == 'Petugas' %}
+<div class="glass-card">
+    <div class="section-header">
+        <div class="section-title">
+            <i class="fa-solid fa-handshake-angle"></i>
+            Catat Transaksi Peminjaman Baru
+        </div>
+    </div>
+    
+    <form action="{{ url_for('borrow_book') }}" method="POST">
+        <div class="form-grid">
+            <div class="form-group">
+                <label class="form-label">Pilih Anggota</label>
+                <select name="id_anggota" class="select-custom" required style="width: 100%;">
+                    <option value="">-- Pilih Anggota --</option>
+                    {% for m in members %}
+                    <option value="{{ m.id_pengguna }}">{{ m.nama }} (ID: {{ m.id_pengguna }} - {{ m.tipe_keanggotaan }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Pilih Buku (Hanya Stok > 0)</label>
+                <select name="isbn" class="select-custom" required style="width: 100%;">
+                    <option value="">-- Pilih Buku --</option>
+                    {% for b in available_books %}
+                    <option value="{{ b.isbn }}">{{ b.judul }} (ISBN: {{ b.isbn }} - Stok: {{ b.stok }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary"><i class="fa-solid fa-plus-circle"></i> Proses Peminjaman</button>
+    </form>
+</div>
+{% endif %}
+
+<!-- Active Borrowings Table -->
+<div class="glass-card">
+    <div class="section-header">
+        <div class="section-title">
+            <i class="fa-solid fa-clock"></i>
+            Peminjaman Aktif (Sedang Dipinjam)
+        </div>
+    </div>
+    
+    <div class="table-responsive">
+        <table class="table-custom">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nama Anggota</th>
+                    <th>Judul Buku (ISBN)</th>
+                    <th>Tanggal Pinjam</th>
+                    <th>Jatuh Tempo</th>
+                    <th>Status</th>
+                    <th>Denda Saat Ini</th>
+                    {% if session.get('user_role') == 'Petugas' %}
+                    <th style="text-align: right;">Aksi</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for loan in active_loans %}
+                <tr>
+                    <td><strong>{{ loan.id_transaksi }}</strong></td>
+                    <td>{{ member_names.get(loan.id_anggota, loan.id_anggota) }} ({{ loan.id_anggota }})</td>
+                    <td>{{ book_titles.get(loan.isbn, loan.isbn) }} <br><small style="color: var(--text-muted);">ISBN: {{ loan.isbn }}</small></td>
+                    <td>{{ loan.tanggal }}</td>
+                    <td>{{ loan.tanggal_jatuh_tempo }}</td>
+                    <td>
+                        {% if loan.status == 'TERLAMBAT' %}
+                            <span class="badge badge-danger">Terlambat</span>
+                        {% else %}
+                            <span class="badge badge-warning">Dipinjam</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% set denda_val = estimated_fines.get(loan.id_transaksi, 0) %}
+                        {% if denda_val > 0 %}
+                            <strong style="color: var(--danger);">Rp {{ denda_val }}</strong>
+                        {% else %}
+                            <span style="color: var(--text-muted);">Rp 0</span>
+                        {% endif %}
+                    </td>
+                    {% if session.get('user_role') == 'Petugas' %}
+                    <td style="text-align: right;">
+                        <form action="{{ url_for('return_book') }}" method="POST" onsubmit="return confirm('Proses pengembalian untuk transaksi {{ loan.id_transaksi }}?')">
+                            <input type="hidden" name="id_transaksi" value="{{ loan.id_transaksi }}">
+                            <button type="submit" class="btn btn-success" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">
+                                <i class="fa-solid fa-rotate-left"></i> Kembalikan
+                            </button>
+                        </form>
+                    </td>
+                    {% endif %}
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="{% if session.get('user_role') == 'Petugas' %}8{% else %}7{% endif %}" style="text-align: center; color: var(--text-muted); padding: 2rem;">
+                        Belum ada peminjaman aktif saat ini.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- History of All Transactions Table -->
+<div class="glass-card">
+    <div class="section-header">
+        <div class="section-title">
+            <i class="fa-solid fa-receipt"></i>
+            Riwayat Seluruh Transaksi
+        </div>
+    </div>
+    
+    <div class="table-responsive">
+        <table class="table-custom">
+            <thead>
+                <tr>
+                    <th>ID Transaksi</th>
+                    <th>Anggota</th>
+                    <th>Buku</th>
+                    <th>Tanggal</th>
+                    <th>Tipe Transaksi</th>
+                    <th>Detail Transaksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tx in all_transactions %}
+                <tr>
+                    <td><strong>{{ tx.id_transaksi }}</strong></td>
+                    <td>{{ member_names.get(tx.id_anggota, tx.id_anggota) }} ({{ tx.id_anggota }})</td>
+                    <td>{{ book_titles.get(tx.isbn, tx.isbn) }}</td>
+                    <td>{{ tx.tanggal }}</td>
+                    <td>
+                        {% if tx.tipe_transaksi == 'Peminjaman' %}
+                            <span class="badge badge-info"><i class="fa-solid fa-arrow-up-right-from-square"></i> Peminjaman</span>
+                        {% else %}
+                            <span class="badge badge-success"><i class="fa-solid fa-arrow-down-left-and-arrow-up-right-to-side"></i> Pengembalian</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if tx.tipe_transaksi == 'Peminjaman' %}
+                            Jatuh tempo: {{ tx.tanggal_jatuh_tempo }} (Status: {{ tx.status }})
+                        {% else %}
+                            Ref Pinjam: {{ tx.id_peminjaman }} | Denda: <strong>Rp {{ tx.denda }}</strong>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 2rem;">
+                        Belum ada transaksi terekam.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

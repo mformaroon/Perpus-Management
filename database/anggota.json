@@ -1,0 +1,37 @@
+[
+    {
+        "id_pengguna": "admin",
+        "nama": "Budi Santoso",
+        "email": "budi@librasys.com",
+        "role": "Petugas",
+        "nip": "19800512",
+        "password": "123456"
+    },
+    {
+        "id_pengguna": "A001",
+        "nama": "Agus Wijaya",
+        "email": "agus@email.com",
+        "role": "Anggota",
+        "tipe_keanggotaan": "Regular",
+        "maks_pinjam": 3,
+        "password": "123456"
+    },
+    {
+        "id_pengguna": "A002",
+        "nama": "Siti Aminah",
+        "email": "siti@email.com",
+        "role": "Anggota",
+        "tipe_keanggotaan": "Premium",
+        "maks_pinjam": 7,
+        "password": "123456"
+    },
+    {
+        "id_pengguna": "12345",
+        "nama": "febi",
+        "email": "febi@gmail.com",
+        "password": "febi123",
+        "role": "Anggota",
+        "tipe_keanggotaan": "Regular",
+        "maks_pinjam": 3
+    }
+]

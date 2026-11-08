@@ -1,0 +1,37 @@
+[
+    {
+        "isbn": "9786020331",
+        "judul": "Laskar Pelangi",
+        "penulis": "Andrea Hirata",
+        "kategori": "Novel",
+        "stok": 3
+    },
+    {
+        "isbn": "9786020822",
+        "judul": "Bumi",
+        "penulis": "Tere Liye",
+        "kategori": "Novel",
+        "stok": 0
+    },
+    {
+        "isbn": "9789792248",
+        "judul": "Negeri 5 Menara",
+        "penulis": "A. Fuadi",
+        "kategori": "Novel",
+        "stok": 0
+    },
+    {
+        "isbn": "9786022914",
+        "judul": "Filosofi Teras",
+        "penulis": "Henry Manampiring",
+        "kategori": "Self Development",
+        "stok": 4
+    },
+    {
+        "isbn": "9786020633",
+        "judul": "Python Crash Course",
+        "penulis": "Eric Matthes",
+        "kategori": "Teknologi",
+        "stok": 2
+    }
+]

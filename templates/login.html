@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LibraSys - Masuk ke Sistem</title>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .login-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 1.5rem;
+        }
+        .login-box {
+            width: 100%;
+            max-width: 450px;
+            animation: fadeIn 0.4s ease-out;
+        }
+        .demo-accounts {
+            margin-top: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .demo-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius-sm);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+        .demo-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-primary);
+            border-color: var(--primary);
+        }
+        .demo-badge {
+            font-size: 0.7rem;
+            padding: 0.2rem 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-wrapper">
+        <div class="glass-card login-box">
+            <!-- Header Logo -->
+            <div class="logo-container" style="justify-content: center; margin-bottom: 2rem;">
+                <i class="fa-solid fa-graduation-cap logo-icon" style="font-size: 2.5rem;"></i>
+                <span class="logo-text" style="font-size: 2rem;">LibraSys</span>
+            </div>
+            
+            <h2 style="text-align: center; margin-bottom: 1.5rem; font-weight: 600;">Silakan Masuk</h2>
+            
+            <!-- Alert Banner -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert-banner {% if category == 'success' %}success{% else %}error{% endif %}" style="margin-bottom: 1.5rem;">
+                            <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem;">
+                                <i class="fa-solid fa-circle-exclamation"></i>
+                                <span>{{ message }}</span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <!-- Login Form -->
+            <form action="{{ url_for('login') }}" method="POST">
+                <div style="display: flex; flex-direction: column; gap: 1.25rem; margin-bottom: 1.5rem;">
+                    <div class="form-group">
+                        <label class="form-label">ID Pengguna (Username)</label>
+                        <div class="search-input-container">
+                            <i class="fa-solid fa-user search-input-icon"></i>
+                            <input type="text" name="user_id" id="form-user-id" placeholder="Contoh: A001 / admin" required class="input-custom" style="padding-left: 2.5rem; width: 100%;">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Kata Sandi (Password)</label>
+                        <div class="search-input-container">
+                            <i class="fa-solid fa-lock search-input-icon"></i>
+                            <input type="password" name="password" id="form-password" placeholder="••••••" required class="input-custom" style="padding-left: 2.5rem; width: 100%;">
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 0.75rem;"><i class="fa-solid fa-right-to-bracket"></i> Masuk</button>
+            </form>
+        </div>
+    </div>
+            
+
+</body>
+</html>

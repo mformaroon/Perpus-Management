@@ -1,0 +1,46 @@
+================================================================================
+       DOKUMENTASI PROJECT PERPOS (LibraSys) - SISTEM PERPUSTAKAAN
+       Mata Kuliah  : Pemrograman Berorientasi Objek (PBO)
+       Semester     : 4
+       Universitas  : Universitas Bakrie
+================================================================================
+
+================================================================================
+DAFTAR ISI
+================================================================================
+1.  Gambaran Umum Project
+2.  Struktur Folder dan Penjelasan File
+3.  Arsitektur Sistem (Layered Architecture)
+4.  Penerapan 4 Pilar OOP
+5.  Validasi Input
+6.  CRUD (Create, Read, Update, Delete)
+7.  Exception Handling
+8.  Static Method dan Class Method
+9.  Alur Program (Flow Lengkap)
+10. Class Diagram Inti (Kode Mermaid)
+11. Ringkasan Hubungan Antar Kelas
+
+
+================================================================================
+1. GAMBARAN UMUM PROJECT
+================================================================================
+
+Nama Project  : PERPOS (LibraSys)
+Bahasa        : Python 3
+Framework Web : Flask
+Penyimpanan   : File JSON (sebagai pengganti database)
+Antarmuka     : Web Browser (HTML + CSS + Jinja2 Template)
+
+PERPOS adalah aplikasi sistem manajemen perpustakaan berbasis web. Sistem ini
+memungkinkan dua jenis pengguna (Anggota dan Petugas) untuk berinteraksi dengan
+data koleksi buku, transaksi peminjaman, pengembalian, dan reservasi buku.
+
+Fitur Utama:
+  - Login dan Logout berbasis sesi (session)
+  - Manajemen buku (tambah, edit, hapus, cari)
+  - Manajemen anggota dan petugas
+  - Peminjaman buku dengan batas maksimum
+  - Pengembalian buku dengan perhitungan denda otomatis (Rp 2.000/hari)
+  - Reservasi buku dengan sistem antrean FIFO saat stok habis
+  - Sinkronisasi status TERLAMBAT otomatis setiap request masuk
+

@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block title %}Reservasi Buku{% endblock %}
+{% block header_title %}Manajemen Reservasi Buku{% endblock %}
+
+{% block content %}
+
+<!-- Active Reservations Table -->
+<div class="glass-card">
+    <div class="section-header">
+        <div class="section-title">
+            <i class="fa-solid fa-bookmark"></i>
+            Daftar Reservasi Buku
+        </div>
+    </div>
+    
+    <div class="table-responsive">
+        <table class="table-custom">
+            <thead>
+                <tr>
+                    <th>ID Reservasi</th>
+                    <th>Nama Anggota</th>
+                    <th>Judul Buku (ISBN)</th>
+                    <th>Tanggal Reservasi</th>
+                    <th>Status</th>
+                    <th style="text-align: right;">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for res in reservations %}
+                <tr>
+                    <td><strong>{{ res.id_reservasi }}</strong></td>
+                    <td>{{ member_names.get(res.id_anggota, res.id_anggota) }} ({{ res.id_anggota }})</td>
+                    <td>{{ book_titles.get(res.isbn, res.isbn) }} <br><small style="color: var(--text-muted);">ISBN: {{ res.isbn }}</small></td>
+                    <td>{{ res.tanggal_reservasi }}</td>
+                    <td>
+                        {% if res.status == 'PENDING' %}
+                            <span class="badge badge-warning"><i class="fa-solid fa-hourglass-start"></i> Pending (Menunggu Stok)</span>
+                        {% elif res.status == 'TERSEDIA' %}
+                            <span class="badge badge-success"><i class="fa-solid fa-circle-check"></i> Tersedia (Siap Diambil)</span>
+                        {% elif res.status == 'SELESAI' %}
+                            <span class="badge badge-info"><i class="fa-solid fa-check-double"></i> Selesai (Sudah Dipinjam)</span>
+                        {% else %}
+                            <span class="badge badge-danger"><i class="fa-solid fa-circle-xmark"></i> Dibatalkan</span>
+                        {% endif %}
+                    </td>
+                    <td style="text-align: right;">
+                        <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+                            <!-- Option to borrow/fulfill for Petugas if status is TERSEDIA -->
+                            {% if session.get('user_role') == 'Petugas' and res.status == 'TERSEDIA' %}
+                            <form action="{{ url_for('borrow_book') }}" method="POST">
+                                <input type="hidden" name="isbn" value="{{ res.isbn }}">
+                                <input type="hidden" name="id_anggota" value="{{ res.id_anggota }}">
+                                <button type="submit" class="btn btn-success" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">
+                                    <i class="fa-solid fa-hand-holding-hand"></i> Pinjamkan Buku
+                                </button>
+                            </form>
+                            {% endif %}
+                            
+                            <!-- Cancel Reservation option -->
+                            {% if res.status in ['PENDING', 'TERSEDIA'] %}
+                                {% if session.get('user_role') == 'Petugas' or session.get('user_id') == res.id_anggota %}
+                                <form action="{{ url_for('cancel_reservation', id_reservasi=res.id_reservasi) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan reservasi ini?')">
+                                    <button type="submit" class="btn btn-danger" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">
+                                        <i class="fa-solid fa-ban"></i> Batalkan
+                                    </button>
+                                </form>
+                                {% endif %}
+                            {% else %}
+                                <span style="color: var(--text-muted); font-size: 0.8rem;">Tidak ada aksi</span>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 2rem;">
+                        Belum ada data reservasi.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

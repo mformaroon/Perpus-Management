@@ -1,0 +1,30 @@
+[
+    {
+        "id_reservasi": "RS-0001",
+        "id_anggota": "A001",
+        "isbn": "9789792248",
+        "tanggal_reservasi": "2026-06-23",
+        "status": "SELESAI"
+    },
+    {
+        "id_reservasi": "RS-0002",
+        "id_anggota": "12345",
+        "isbn": "9789792248",
+        "tanggal_reservasi": "2026-07-01",
+        "status": "SELESAI"
+    },
+    {
+        "id_reservasi": "RS-0003",
+        "id_anggota": "A001",
+        "isbn": "9789792248",
+        "tanggal_reservasi": "2026-07-01",
+        "status": "SELESAI"
+    },
+    {
+        "id_reservasi": "RS-0004",
+        "id_anggota": "A002",
+        "isbn": "9789792248",
+        "tanggal_reservasi": "2026-07-01",
+        "status": "SELESAI"
+    }
+]
